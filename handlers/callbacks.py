@@ -215,9 +215,12 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == 'contact_manager':
         context.user_data.pop(SUPPORT_REPLY_STATE, None)
         context.user_data[SUPPORT_STATE_KEY] = True
+        contact_keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton(get_text(user_lang, 'menu_main_button'), callback_data='menu_main')]
+        ])
         await query.message.reply_text(
             get_text(user_lang, 'contact_prompt'),
-            reply_markup=build_default_keyboard(user_lang)
+            reply_markup=contact_keyboard
         )
 
     elif data.startswith('support_reply:'):
