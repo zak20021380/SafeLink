@@ -12,9 +12,10 @@ STRINGS = {
                    "✅ Total scans: {total_scans}\n"
                    "🚨 Phishing found: {phishing_found}\n"
                    "🔍 Safe links: {safe_found}\n\n"
-                   "Send me a link to scan!",
+                   "Send me a link to scan!\n\n"
+                   "⚠️ You can scan up to 5 links every 24 hours.",
 
-        'menu_prompt': "📌 Choose an option below to continue:",
+        'menu_prompt': "📌 Choose an option below to continue:\n\n⚠️ Limit: 5 links every 24 hours.",
         'menu_scan_button': "🔍 Scan link",
         'menu_stats_button': "📊 My stats",
         'menu_history_button': "🕑 History",
@@ -22,7 +23,7 @@ STRINGS = {
         'menu_help_button': "ℹ️ Help",
         'menu_contact_button': "📞 Contact manager",
         'menu_main_button': "🔙 Main menu",
-        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly.",
+        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly. (Max 5 links per 24 hours)",
 
         'help': "🔍 **How to Use SafeClick:**\n\n"
                 "**Commands:**\n"
@@ -32,7 +33,8 @@ STRINGS = {
                 "/stats - Your statistics\n"
                 "/history - Recent scans\n"
                 "/settings - Preferences\n\n"
-                "Or just send me any link!",
+                "Or just send me any link!\n\n"
+                "⚠️ Remember: only 5 links can be scanned every 24 hours.",
 
         # Stats
         'stats': "📊 **Your Statistics**\n\n"
@@ -45,31 +47,36 @@ STRINGS = {
                  "❌ Errors: {errors}\n\n"
                  "📅 Member since: {first_seen}\n"
                  "🕐 Last active: {last_active}\n\n"
-                 "📊 Today's scans: {today_scans}/{daily_limit}",
+                 "📊 Today's scans (last 24h): {today_scans}/{daily_limit}\n"
+                 "⚠️ Limit: 5 links every 24 hours",
 
         # Scanning
-        'scanning': "🔍 Scanning URL...\n`{url}`",
+        'scanning': "🔍 Scanning URL...\n`{url}`\n\n⚠️ Only 5 links can be scanned every 24 hours.",
         'safe_link': "✅ **Link Appears Safe**\n\n"
                      "Our automated checks did not detect any malicious behaviour.\n\n"
                      "**Scan summary:**\n"
                      "• No phishing indicators were triggered during analysis.\n"
                      "• Threat intelligence sources currently consider this URL low risk.\n\n"
                      "⚠️ Always verify the sender before sharing personal data.\n"
-                     "📨 You can send another link anytime for a fresh review.",
+                     "📨 You can send another link anytime for a fresh review.\n\n"
+                     "⏱️ Reminder: limit is 5 links per 24 hours.",
         'phishing_detected': "🚨 **HIGH RISK: PHISHING DETECTED**\n\n"
                              "The scan flagged this URL as malicious and unsafe to open.\n\n"
                              "**Why it is dangerous:**\n"
                              "• The content shows strong signs of credential theft or malware delivery.\n"
                              "• The domain or hosting matches known phishing infrastructure.\n\n"
                              "❌ Do not open, share, or submit any information on this site.\n"
-                             "📨 Send a different link if you need it checked.",
-        'error_scanning': "❌ **Error Scanning URL**\n\n{error}",
+                             "📨 Send a different link if you need it checked.\n\n"
+                             "⏱️ Reminder: limit is 5 links per 24 hours.",
+        'error_scanning': "❌ **Error Scanning URL**\n\n{error}\n\n⚠️ You can scan only 5 links every 24 hours.",
         'no_urls_found': "❌ I couldn't detect a valid link in your message.\n\n"
-                          "Please send the full address including https:// or use /scan <url>.",
+                          "Please send the full address including https:// or use /scan <url>.\n\n"
+                          "⚠️ Limit reminder: 5 links every 24 hours.",
         'invalid_url_format': "❌ The link format looks incorrect.\n\n"
-                               "Make sure it starts with http:// or https:// and try again.",
-        'ready_for_links': "🔁 I'm ready for the next link whenever you are. Just paste it here!",
-        'join_success': "✅ You're all set! You can now use the bot to analyse links.",
+                               "Make sure it starts with http:// or https:// and try again.\n\n"
+                               "⚠️ Limit reminder: 5 links every 24 hours.",
+        'ready_for_links': "🔁 I'm ready for the next link whenever you are. Just paste it here!\n\n⚠️ Limit: 5 links per 24 hours.",
+        'join_success': "✅ You're all set! You can now use the bot to analyse links.\n\n⚠️ Remember: 5 links every 24 hours.",
 
         # Contact Manager
         'contact_prompt': "📨 Please type your message for the manager. We'll notify them right away.",
@@ -84,21 +91,22 @@ STRINGS = {
         'contact_reply_received': "📬 Manager reply:\n\n{message}\n\nYou can continue the conversation here.",
 
         # Limits
-        'daily_limit_reached': "⚠️ **Daily Scan Limit Reached**\n\n"
-                               "You've used {count}/{limit} scans today.\n"
-                               "Limit resets at midnight UTC.\n\n"
-                               "Contact admin for higher limits.",
+        'daily_limit_reached': "⚠️ **24-Hour Scan Limit Reached**\n\n"
+                               "You've used {count}/{limit} scans in the last 24 hours (max 5).\n"
+                               "Please wait until the 24-hour window resets before scanning again.\n\n"
+                               "Contact admin if you need assistance.",
 
         # History
-        'history': "📜 **Recent Scan History**\n\n{history}\n\nShowing last {count} scans.",
+        'history': "📜 **Recent Scan History**\n\n{history}\n\nShowing last {count} scans.\n⚠️ Limit: 5 links every 24 hours.",
         'no_history': "📭 No scan history yet.\n\nStart by sending me a URL!",
 
         # Settings
         'settings': "⚙️ **Your Settings**\n\n"
                     "🌐 Language: {language}\n"
                     "🔔 Notifications: {notifications}\n"
-                    "📊 Daily limit: {daily_limit}\n"
-                    "💡 Tips: {show_tips}",
+                    "📊 Daily limit (24h): {daily_limit}\n"
+                    "💡 Tips: {show_tips}\n\n"
+                    "⚠️ Maximum of 5 scans every 24 hours.",
 
         'language_changed': "✅ Language changed to English",
         'notifications_on': "🔔 Notifications enabled",
@@ -126,6 +134,7 @@ STRINGS = {
                        "📢 Force join: {force_join}\n"
                        "📱 Channel: {channel}\n"
                        "📊 Global daily limit: {global_limit}\n\n"
+                       "⚠️ Each user may scan only 5 links per 24-hour window.\n\n"
                        "Use admin commands.",
 
         'broadcast_usage': "📢 **Broadcast Message**\n\n"
@@ -160,9 +169,9 @@ STRINGS = {
         'force_join_bot_not_admin': "❌ I am not an administrator in that channel. Add me as an admin and try again.",
         'force_join_cancelled': "❌ Force join setup cancelled.",
 
-        'limit_set': "✅ Daily limit set to {limit} for user {user_id}",
-        'global_limit_set': "✅ Global daily limit set to {limit}",
-        'limit_reset': "✅ Limit reset to default ({limit}) for user {user_id}",
+        'limit_set': "✅ Daily limit set to {limit} for user {user_id} (max 5 per 24h)",
+        'global_limit_set': "✅ Global daily limit set to {limit} (capped at 5 per 24h)",
+        'limit_reset': "✅ Limit reset to default ({limit}) for user {user_id} (max 5 per 24h)",
         'user_info': "📋 **User Info**\n\n"
                      "👤 Username: @{username}\n"
                      "🆔 ID: `{user_id}`\n"
@@ -182,9 +191,10 @@ STRINGS = {
                    "✅ کل اسکن‌ها: {total_scans}\n"
                    "🚨 فیشینگ یافت شده: {phishing_found}\n"
                    "🔍 لینک‌های امن: {safe_found}\n\n"
-                   "یک لینک برای اسکن بفرستید!",
+                   "یک لینک برای اسکن بفرستید!\n\n"
+                   "⚠️ در هر ۲۴ ساعت فقط می‌توانید ۵ لینک را اسکن کنید.",
 
-        'menu_prompt': "📌 برای ادامه یکی از گزینه‌های زیر را انتخاب کنید:",
+        'menu_prompt': "📌 برای ادامه یکی از گزینه‌های زیر را انتخاب کنید:\n\n⚠️ حداکثر ۵ لینک در هر ۲۴ ساعت قابل اسکن است.",
         'menu_scan_button': "🔍 اسکن لینک",
         'menu_stats_button': "📊 آمار من",
         'menu_history_button': "🕑 تاریخچه",
@@ -192,7 +202,7 @@ STRINGS = {
         'menu_help_button': "ℹ️ راهنما",
         'menu_contact_button': "📞 ارتباط با مدیر",
         'menu_main_button': "🔙 منوی اصلی",
-        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم.",
+        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم. (حداکثر ۵ لینک در ۲۴ ساعت)",
 
         'help': "🔍 **راهنمای استفاده:**\n\n"
                 "**دستورات:**\n"
@@ -202,7 +212,8 @@ STRINGS = {
                 "/stats - آمار شما\n"
                 "/history - اسکن‌های اخیر\n"
                 "/settings - تنظیمات\n\n"
-                "یا مستقیم لینک بفرستید!",
+                "یا مستقیم لینک بفرستید!\n\n"
+                "⚠️ در هر بازه ۲۴ ساعته فقط ۵ لینک قابل اسکن است.",
 
         # Stats
         'stats': "📊 **آمار شما**\n\n"
@@ -215,31 +226,36 @@ STRINGS = {
                  "❌ خطاها: {errors}\n\n"
                  "📅 عضویت از: {first_seen}\n"
                  "🕐 آخرین فعالیت: {last_active}\n\n"
-                 "📊 اسکن‌های امروز: {today_scans}/{daily_limit}",
+                 "📊 اسکن‌های ۲۴ ساعت اخیر: {today_scans}/{daily_limit}\n"
+                 "⚠️ حداکثر ۵ لینک در هر ۲۴ ساعت",
 
         # Scanning
-        'scanning': "🔍 در حال اسکن...\n`{url}`",
+        'scanning': "🔍 در حال اسکن...\n`{url}`\n\n⚠️ در هر ۲۴ ساعت فقط ۵ لینک قابل اسکن است.",
         'safe_link': "✅ **لینک امن به نظر می‌رسد**\n\n"
                      "در بررسی خودکار، نشانه‌ای از فعالیت مخرب مشاهده نشد.\n\n"
                      "**خلاصه اسکن:**\n"
                      "• هیچ شاخص فیشینگی در محتوا فعال نشد.\n"
                      "• منابع تهدید این آدرس را کم‌خطر گزارش کرده‌اند.\n\n"
                      "⚠️ همیشه قبل از وارد کردن اطلاعات، فرستنده را بررسی کنید.\n"
-                     "📨 هر زمان خواستید، لینک دیگری بفرستید تا بررسی شود.",
+                     "📨 هر زمان خواستید، لینک دیگری بفرستید تا بررسی شود.\n\n"
+                     "⏱️ یادآوری: حداکثر ۵ لینک در ۲۴ ساعت.",
         'phishing_detected': "🚨 **هشدار جدی: فیشینگ شناسایی شد**\n\n"
                              "اسکن نشان می‌دهد این لینک مخرب و ناامن است.\n\n"
                              "**دلایل خطرناک بودن:**\n"
                              "• محتوا نشانه‌های قوی سرقت اطلاعات یا انتشار بدافزار دارد.\n"
                              "• دامنه یا میزبانی با زیرساخت‌های شناخته‌شده فیشینگ مطابقت دارد.\n\n"
                              "❌ به هیچ عنوان وارد لینک نشوید یا اطلاعاتی ارسال نکنید.\n"
-                             "📨 برای بررسی، لینک دیگری بفرستید.",
-        'error_scanning': "❌ **خطا در اسکن**\n\n{error}",
+                             "📨 برای بررسی، لینک دیگری بفرستید.\n\n"
+                             "⏱️ یادآوری: حداکثر ۵ لینک در ۲۴ ساعت.",
+        'error_scanning': "❌ **خطا در اسکن**\n\n{error}\n\n⚠️ توجه: در هر ۲۴ ساعت فقط ۵ لینک قابل اسکن است.",
         'no_urls_found': "❌ لینکی با فرمت معتبر پیدا نکردم.\n\n"
-                          "لطفا آدرس کامل را همراه با https:// بفرستید یا از ‎/scan استفاده کنید.",
+                          "لطفا آدرس کامل را همراه با https:// بفرستید یا از ‎/scan استفاده کنید.\n\n"
+                          "⚠️ یادآوری محدودیت: ۵ لینک در هر ۲۴ ساعت.",
         'invalid_url_format': "❌ فرمت لینک درست نیست.\n\n"
-                               "لطفا لینک را با http:// یا https:// ارسال کنید و دوباره تلاش کنید.",
-        'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید.",
-        'join_success': "✅ همه چیز آماده است! حالا می‌توانید لینک‌ها را با ربات بررسی کنید.",
+                               "لطفا لینک را با http:// یا https:// ارسال کنید و دوباره تلاش کنید.\n\n"
+                               "⚠️ یادآوری محدودیت: ۵ لینک در هر ۲۴ ساعت.",
+        'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید.\n\n⚠️ حداکثر ۵ لینک در ۲۴ ساعت.",
+        'join_success': "✅ همه چیز آماده است! حالا می‌توانید لینک‌ها را با ربات بررسی کنید.\n\n⚠️ فراموش نکنید: ۵ لینک در هر ۲۴ ساعت.",
 
         # Contact Manager
         'contact_prompt': "📨 لطفاً پیام خود را برای مدیر بنویسید. بلافاصله به او اطلاع می‌دهیم.",
@@ -254,21 +270,22 @@ STRINGS = {
         'contact_reply_received': "📬 پاسخ مدیر:\n\n{message}\n\nبرای ادامه گفتگو همینجا پیام دهید.",
 
         # Limits
-        'daily_limit_reached': "⚠️ **محدودیت روزانه تمام شد**\n\n"
-                               "شما {count}/{limit} اسکن امروز انجام داده‌اید.\n"
-                               "محدودیت نیمه‌شب ریست می‌شود.\n\n"
-                               "با ادمین تماس بگیرید.",
+        'daily_limit_reached': "⚠️ **محدودیت ۲۴ ساعته تکمیل شد**\n\n"
+                               "شما در ۲۴ ساعت گذشته {count}/{limit} اسکن انجام داده‌اید (حداکثر ۵).\n"
+                               "لطفاً تا ریست شدن بازه ۲۴ ساعته صبر کنید.\n\n"
+                               "در صورت نیاز با ادمین تماس بگیرید.",
 
         # History
-        'history': "📜 **تاریخچه اسکن‌ها**\n\n{history}\n\nنمایش {count} اسکن آخر.",
+        'history': "📜 **تاریخچه اسکن‌ها**\n\n{history}\n\nنمایش {count} اسکن آخر.\n⚠️ محدودیت: ۵ لینک در ۲۴ ساعت.",
         'no_history': "📭 تاریخچه‌ای ندارید.\n\nیک لینک بفرستید!",
 
         # Settings
         'settings': "⚙️ **تنظیمات شما**\n\n"
                     "🌐 زبان: {language}\n"
                     "🔔 اعلان‌ها: {notifications}\n"
-                    "📊 محدودیت روزانه: {daily_limit}\n"
-                    "💡 نکات: {show_tips}",
+                    "📊 محدودیت ۲۴ ساعته: {daily_limit}\n"
+                    "💡 نکات: {show_tips}\n\n"
+                    "⚠️ حداکثر ۵ لینک در هر ۲۴ ساعت.",
 
         'language_changed': "✅ زبان به فارسی تغییر کرد",
         'notifications_on': "🔔 اعلان‌ها فعال شد",
@@ -296,6 +313,7 @@ STRINGS = {
                        "📢 عضویت اجباری: {force_join}\n"
                        "📱 کانال: {channel}\n"
                        "📊 محدودیت پیش‌فرض: {global_limit}\n\n"
+                       "⚠️ هر کاربر فقط می‌تواند ۵ لینک را در هر ۲۴ ساعت اسکن کند.\n\n"
                        "از دستورات ادمین استفاده کنید.",
 
         'broadcast_usage': "📢 **ارسال پیام همگانی**\n\n"
@@ -330,9 +348,9 @@ STRINGS = {
         'force_join_bot_not_admin': "❌ ربات در این کانال ادمین نیست. ابتدا ربات را ادمین کنید و دوباره تلاش کنید.",
         'force_join_cancelled': "❌ تنظیم عضویت اجباری لغو شد.",
 
-        'limit_set': "✅ محدودیت روزانه {limit} برای کاربر {user_id} تنظیم شد",
-        'global_limit_set': "✅ محدودیت پیش‌فرض {limit} تنظیم شد",
-        'limit_reset': "✅ محدودیت به پیش‌فرض ({limit}) برگشت برای کاربر {user_id}",
+        'limit_set': "✅ محدودیت روزانه {limit} برای کاربر {user_id} تنظیم شد (حداکثر ۵ در ۲۴ ساعت)",
+        'global_limit_set': "✅ محدودیت پیش‌فرض {limit} تنظیم شد (سقف ۵ در ۲۴ ساعت)",
+        'limit_reset': "✅ محدودیت به پیش‌فرض ({limit}) برگشت برای کاربر {user_id} (حداکثر ۵ در ۲۴ ساعت)",
         'user_info': "📋 **اطلاعات کاربر**\n\n"
                      "👤 نام کاربری: @{username}\n"
                      "🆔 شناسه: `{user_id}`\n"
