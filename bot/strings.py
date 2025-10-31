@@ -14,6 +14,15 @@ STRINGS = {
                    "🔍 Safe links: {safe_found}\n\n"
                    "Send me a link to scan!",
 
+        'menu_prompt': "📌 Choose an option below to continue:",
+        'menu_scan_button': "🔍 Scan link",
+        'menu_stats_button': "📊 My stats",
+        'menu_history_button': "🕑 History",
+        'menu_settings_button': "⚙️ Settings",
+        'menu_help_button': "ℹ️ Help",
+        'menu_contact_button': "📞 Contact manager",
+        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly. You can also use /scan followed by a URL.",
+
         'help': "🔍 **How to Use SafeClick:**\n\n"
                 "**Commands:**\n"
                 "/start - Start & view stats\n"
@@ -60,6 +69,18 @@ STRINGS = {
                                "Make sure it starts with http:// or https:// and try again.",
         'ready_for_links': "🔁 I'm ready for the next link whenever you are. Just paste it here!",
         'join_success': "✅ You're all set! You can now use the bot to analyse links.",
+
+        # Contact Manager
+        'contact_prompt': "📨 Please type your message for the manager. We'll notify them right away.",
+        'contact_thanks': "✅ Your message was sent to the manager. They will reply here soon.",
+        'contact_no_message': "❌ Please send a text message so we can forward it to the manager.",
+        'contact_received_admin': "📩 New support message\n\nUser: {display}\nID: {user_id}\n\nMessage:\n{message}",
+        'contact_reply_button': "✉️ Reply",
+        'contact_reply_prompt': "💬 Replying to {display} (ID: {user_id}). Send your response now.",
+        'contact_unknown_thread': "❌ Conversation not found. Ask the user to contact again.",
+        'contact_reply_sent': "✅ Reply sent to the user.",
+        'contact_reply_failed': "❌ Could not deliver the reply to the user.",
+        'contact_reply_received': "📬 Manager reply:\n\n{message}\n\nYou can continue the conversation here.",
 
         # Limits
         'daily_limit_reached': "⚠️ **Daily Scan Limit Reached**\n\n"
@@ -161,6 +182,15 @@ STRINGS = {
                    "🔍 لینک‌های امن: {safe_found}\n\n"
                    "یک لینک برای اسکن بفرستید!",
 
+        'menu_prompt': "📌 برای ادامه یکی از گزینه‌های زیر را انتخاب کنید:",
+        'menu_scan_button': "🔍 اسکن لینک",
+        'menu_stats_button': "📊 آمار من",
+        'menu_history_button': "🕑 تاریخچه",
+        'menu_settings_button': "⚙️ تنظیمات",
+        'menu_help_button': "ℹ️ راهنما",
+        'menu_contact_button': "📞 ارتباط با مدیر",
+        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم. همچنین می‌توانید از دستور /scan به همراه لینک استفاده کنید.",
+
         'help': "🔍 **راهنمای استفاده:**\n\n"
                 "**دستورات:**\n"
                 "/start - شروع و مشاهده آمار\n"
@@ -207,6 +237,18 @@ STRINGS = {
                                "لطفا لینک را با http:// یا https:// ارسال کنید و دوباره تلاش کنید.",
         'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید.",
         'join_success': "✅ همه چیز آماده است! حالا می‌توانید لینک‌ها را با ربات بررسی کنید.",
+
+        # Contact Manager
+        'contact_prompt': "📨 لطفاً پیام خود را برای مدیر بنویسید. بلافاصله به او اطلاع می‌دهیم.",
+        'contact_thanks': "✅ پیام شما برای مدیر ارسال شد. به محض پاسخ، همینجا دریافت می‌کنید.",
+        'contact_no_message': "❌ برای ارتباط با مدیر باید یک پیام متنی ارسال کنید.",
+        'contact_received_admin': "📩 پیام جدید پشتیبانی\n\nکاربر: {display}\nشناسه: {user_id}\n\nمتن پیام:\n{message}",
+        'contact_reply_button': "✉️ پاسخ",
+        'contact_reply_prompt': "💬 در حال پاسخ به {display} (شناسه: {user_id}). پیام خود را ارسال کنید.",
+        'contact_unknown_thread': "❌ مکالمه‌ای یافت نشد. از کاربر بخواهید دوباره پیام ارسال کند.",
+        'contact_reply_sent': "✅ پاسخ برای کاربر ارسال شد.",
+        'contact_reply_failed': "❌ ارسال پاسخ به کاربر با خطا مواجه شد.",
+        'contact_reply_received': "📬 پاسخ مدیر:\n\n{message}\n\nبرای ادامه گفتگو همینجا پیام دهید.",
 
         # Limits
         'daily_limit_reached': "⚠️ **محدودیت روزانه تمام شد**\n\n"
