@@ -94,10 +94,6 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Add/update user in database
     db.add_user(user_id, username)
 
-    # Check force join
-    if not await check_force_join(update, context):
-        return
-
     # Get user preferences and stats
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
@@ -126,9 +122,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     db.update_user_activity(user_id)
 
-    if not await check_force_join(update, context):
-        return
-
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
 
@@ -144,9 +137,6 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle /stats command"""
     user_id = update.effective_user.id
     db.update_user_activity(user_id)
-
-    if not await check_force_join(update, context):
-        return
 
     stats = db.get_user_stats(user_id)
     prefs = db.get_user_preferences(user_id)
@@ -188,9 +178,6 @@ async def history_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     db.update_user_activity(user_id)
 
-    if not await check_force_join(update, context):
-        return
-
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
 
@@ -230,9 +217,6 @@ async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     db.update_user_activity(user_id)
 
-    if not await check_force_join(update, context):
-        return
-
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
     daily_limit = db.get_user_daily_limit(user_id)
@@ -258,24 +242,8 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     db.update_user_activity(user_id)
 
-    if not await check_force_join(update, context):
-        return
-
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
-
-    # Check daily limit
-    today_scans = db.get_today_scan_count(user_id)
-    daily_limit = db.get_user_daily_limit(user_id)
-
-    # Admins have unlimited scans
-    if user_id not in ADMIN_IDS and today_scans >= daily_limit:
-        await update.message.reply_text(
-            get_text(user_lang, 'daily_limit_reached', count=today_scans, limit=daily_limit),
-            reply_markup=build_default_keyboard(user_lang),
-            parse_mode='Markdown'
-        )
-        return
 
     if not context.args:
         await update.message.reply_text(
@@ -290,6 +258,22 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_valid_url(url):
         await update.message.reply_text(
             get_text(user_lang, 'invalid_url_format'),
+            reply_markup=build_default_keyboard(user_lang),
+            parse_mode='Markdown'
+        )
+        return
+
+    if not await check_force_join(update, context):
+        return
+
+    # Check daily limit
+    today_scans = db.get_today_scan_count(user_id)
+    daily_limit = db.get_user_daily_limit(user_id)
+
+    # Admins have unlimited scans
+    if user_id not in ADMIN_IDS and today_scans >= daily_limit:
+        await update.message.reply_text(
+            get_text(user_lang, 'daily_limit_reached', count=today_scans, limit=daily_limit),
             reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
@@ -419,9 +403,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     db.update_user_activity(user_id)
 
-    if not await check_force_join(update, context):
-        return
-
     text = update.message.text
     if not text:
         return
@@ -489,6 +470,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_markup=build_default_keyboard(user_lang),
                 parse_mode='Markdown'
             )
+        return
+
+    if not await check_force_join(update, context):
         return
 
     # Check daily limit
