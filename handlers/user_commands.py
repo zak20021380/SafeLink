@@ -12,6 +12,7 @@ from bot.database import db
 from bot.strings import get_text
 from bot.utils import extract_urls, check_url
 from bot.config import ADMIN_IDS
+from .admin_commands import handle_admin_interactions
 
 logger = logging.getLogger(__name__)
 
@@ -331,6 +332,9 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle messages containing URLs (auto-scan)"""
     user_id = update.effective_user.id
+    if await handle_admin_interactions(update, context):
+        return
+
     db.update_user_activity(user_id)
 
     if not await check_force_join(update, context):

@@ -91,18 +91,36 @@ STRINGS = {
                        "Use admin commands.",
 
         'broadcast_usage': "📢 **Broadcast Message**\n\n"
-                           "Usage: /broadcast <message>\n\n"
-                           "Example: `/broadcast Hello everyone!`",
+                           "Use `/broadcast` to enter interactive mode or `/broadcast <message>` for a quick text blast.\n\n"
+                           "You can send text, photos, videos, or documents and they will be copied to every user.",
+
+        'broadcast_prompt': "📢 **Broadcast Mode**\n\n"
+                            "Send the exact message you want to deliver to all users.\n"
+                            "You can forward or create a new message with any media.\n\n"
+                            "Use the cancel button below to abort.",
+
+        'broadcast_ready': "✅ Message saved!\n\nReview the preview below and confirm to send it to everyone.",
 
         'broadcast_confirm': "📢 **Confirm Broadcast**\n\n"
-                             "Send to {count} users?\n\n{message}",
+                             "Send to {count} users?\n\n{preview}",
 
         'broadcasting': "📤 Broadcasting...\n\n{sent}/{total}\n✅ Sent: {success}\n❌ Failed: {failed}",
         'broadcast_complete': "✅ **Broadcast Complete!**\n\nTotal: {total}\n✅ Sent: {success}\n❌ Failed: {failed}",
+        'broadcast_cancelled': "❌ Broadcast cancelled.",
 
         'force_join_enabled': "✅ Force join enabled!\n\nChannel: {channel}",
         'force_join_disabled': "❌ Force join disabled!",
         'force_join_usage': "Usage: /forcejoin <channel_id> <@username>\n\nExample: `/forcejoin -1001234567890 @YourChannel`",
+
+        'force_join_prompt': "📢 **Force Join Setup**\n\n"
+                              "Current status: {status}\n"
+                              "Channel: {channel}\n\n"
+                              "Forward a message from the target channel or send its public @username.\n"
+                              "Once I verify access, I'll enable force join.",
+        'force_join_invalid': "❌ I couldn't detect a channel. Please forward a message from the desired channel or send its @username (e.g. @MyChannel).",
+        'force_join_need_username': "❌ That channel doesn't have a public @username. Please set one in Telegram or send the @username manually.",
+        'force_join_bot_not_admin': "❌ I am not an administrator in that channel. Add me as an admin and try again.",
+        'force_join_cancelled': "❌ Force join setup cancelled.",
 
         'limit_set': "✅ Daily limit set to {limit} for user {user_id}",
         'global_limit_set': "✅ Global daily limit set to {limit}",
@@ -205,17 +223,36 @@ STRINGS = {
                        "از دستورات ادمین استفاده کنید.",
 
         'broadcast_usage': "📢 **ارسال پیام همگانی**\n\n"
-                           "نحوه استفاده: /broadcast <پیام>\n\n"
-                           "مثال: `/broadcast سلام به همه!`",
+                           "برای حالت تعاملی از `/broadcast` و برای متن سریع از `/broadcast <پیام>` استفاده کنید.\n\n"
+                           "می‌توانید متن، عکس، ویدیو یا فایل ارسال کنید تا برای همه کاربران کپی شود.",
 
-        'broadcast_confirm': "📢 **تایید ارسال**\n\nبه {count} کاربر ارسال شود?\n\n{message}",
+        'broadcast_prompt': "📢 **حالت ارسال همگانی**\n\n"
+                            "پیامی که باید برای همه کاربران ارسال شود را بفرستید.\n"
+                            "می‌توانید پیام جدید بسازید یا از کانال/چت دلخواه فوروارد کنید.\n\n"
+                            "برای انصراف از دکمه لغو استفاده کنید.",
+
+        'broadcast_ready': "✅ پیام ذخیره شد!\n\nپیش‌نمایش را بررسی و برای ارسال تایید کنید.",
+
+        'broadcast_confirm': "📢 **تایید ارسال**\n\n"
+                             "به {count} کاربر ارسال شود؟\n\n{preview}",
 
         'broadcasting': "📤 در حال ارسال...\n\n{sent}/{total}\n✅ ارسال شده: {success}\n❌ خطا: {failed}",
         'broadcast_complete': "✅ **ارسال کامل شد!**\n\nکل: {total}\n✅ ارسال شده: {success}\n❌ خطا: {failed}",
+        'broadcast_cancelled': "❌ ارسال همگانی لغو شد.",
 
         'force_join_enabled': "✅ عضویت اجباری فعال شد!\n\nکانال: {channel}",
         'force_join_disabled': "❌ عضویت اجباری غیرفعال شد!",
         'force_join_usage': "نحوه استفاده: /forcejoin <شناسه_کانال> <@نام_کاربری>\n\nمثال: `/forcejoin -1001234567890 @YourChannel`",
+
+        'force_join_prompt': "📢 **تنظیم عضویت اجباری**\n\n"
+                              "وضعیت فعلی: {status}\n"
+                              "کانال: {channel}\n\n"
+                              "یک پیام از کانال موردنظر فوروارد کنید یا نام کاربری عمومی آن را بفرستید.\n"
+                              "بعد از تایید دسترسی، عضویت اجباری فعال می‌شود.",
+        'force_join_invalid': "❌ کانالی شناسایی نشد. لطفا یک پیام از کانال فوروارد کنید یا نام کاربری آن را به صورت @Example بفرستید.",
+        'force_join_need_username': "❌ این کانال نام کاربری عمومی ندارد. ابتدا در تلگرام نام کاربری تعریف کنید یا آن را به صورت دستی بفرستید.",
+        'force_join_bot_not_admin': "❌ ربات در این کانال ادمین نیست. ابتدا ربات را ادمین کنید و دوباره تلاش کنید.",
+        'force_join_cancelled': "❌ تنظیم عضویت اجباری لغو شد.",
 
         'limit_set': "✅ محدودیت روزانه {limit} برای کاربر {user_id} تنظیم شد",
         'global_limit_set': "✅ محدودیت پیش‌فرض {limit} تنظیم شد",

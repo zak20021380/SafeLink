@@ -10,7 +10,7 @@ from telegram.ext import ContextTypes
 from bot.database import db
 from bot.strings import get_text
 from bot.config import ADMIN_IDS
-from .admin_commands import do_broadcast, is_admin
+from .admin_commands import do_broadcast, is_admin, start_broadcast_flow, start_forcejoin_flow
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +113,20 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except:
             await query.answer("Already up to date!")
 
+    elif data == 'admin_broadcast':
+        if not is_admin(user_id):
+            await query.answer("❌ Admin only!", show_alert=True)
+            return
+
+        await start_broadcast_flow(query.message, context)
+
+    elif data == 'admin_forcejoin':
+        if not is_admin(user_id):
+            await query.answer("❌ Admin only!", show_alert=True)
+            return
+
+        await start_forcejoin_flow(query.message, context)
+
     # ==================== BROADCAST CONFIRMATION ====================
 
     elif data == 'broadcast_yes':
@@ -120,20 +134,49 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.answer("❌ Admin only!", show_alert=True)
             return
 
-        message = context.user_data.get('broadcast_message')
-        if not message:
-            await query.edit_message_text("❌ Broadcast message not found. Please use /broadcast again.")
+        if not context.user_data.get('broadcast_payload'):
+            await query.edit_message_text(
+                "❌ Broadcast message not found. Please use /broadcast again."
+            )
             return
 
         await query.edit_message_text("📤 Starting broadcast...")
-        await do_broadcast(update, context, message)
+        await do_broadcast(update, context)
 
     elif data == 'broadcast_no':
         if not is_admin(user_id):
             await query.answer("❌ Admin only!", show_alert=True)
             return
 
-        await query.edit_message_text("❌ Broadcast cancelled.")
+        context.user_data.pop('broadcast_state', None)
+        context.user_data.pop('broadcast_payload', None)
+        await query.edit_message_text(
+            get_text('en', 'broadcast_cancelled'),
+            parse_mode='Markdown'
+        )
+
+    elif data == 'broadcast_cancel_flow':
+        if not is_admin(user_id):
+            await query.answer("❌ Admin only!", show_alert=True)
+            return
+
+        context.user_data.pop('broadcast_state', None)
+        context.user_data.pop('broadcast_payload', None)
+        await query.edit_message_text(
+            get_text('en', 'broadcast_cancelled'),
+            parse_mode='Markdown'
+        )
+
+    elif data == 'forcejoin_cancel':
+        if not is_admin(user_id):
+            await query.answer("❌ Admin only!", show_alert=True)
+            return
+
+        context.user_data.pop('forcejoin_state', None)
+        await query.edit_message_text(
+            get_text('en', 'force_join_cancelled'),
+            parse_mode='Markdown'
+        )
 
     # ==================== UNKNOWN CALLBACK ====================
 
