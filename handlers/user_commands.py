@@ -15,6 +15,12 @@ from bot.strings import get_text
 from bot.utils import extract_urls, check_url, is_valid_url
 from bot.config import ADMIN_IDS
 from .admin_commands import handle_admin_interactions
+from .keyboards import (
+    build_main_menu_keyboard,
+    build_settings_keyboard,
+    build_default_keyboard,
+    build_join_keyboard,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,44 +28,6 @@ logger = logging.getLogger(__name__)
 SUPPORT_STATE_KEY = 'awaiting_support_message'
 SUPPORT_REPLY_STATE = 'support_reply_to'
 SUPPORT_THREADS_KEY = 'support_threads'
-
-
-def build_main_menu_keyboard(user_lang: str) -> InlineKeyboardMarkup:
-    """Build the main menu keyboard with quick actions."""
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton(get_text(user_lang, 'menu_scan_button'), callback_data='menu_scan'),
-            InlineKeyboardButton(get_text(user_lang, 'menu_stats_button'), callback_data='menu_stats')
-        ],
-        [
-            InlineKeyboardButton(get_text(user_lang, 'menu_history_button'), callback_data='menu_history'),
-            InlineKeyboardButton(get_text(user_lang, 'menu_settings_button'), callback_data='menu_settings')
-        ],
-        [
-            InlineKeyboardButton(get_text(user_lang, 'menu_help_button'), callback_data='menu_help')
-        ],
-        [
-            InlineKeyboardButton(get_text(user_lang, 'menu_contact_button'), callback_data='contact_manager')
-        ],
-        [
-            InlineKeyboardButton("🇬🇧 English", callback_data='lang_en'),
-            InlineKeyboardButton("🇮🇷 فارسی", callback_data='lang_fa')
-        ]
-    ])
-
-
-def build_settings_keyboard() -> InlineKeyboardMarkup:
-    """Build the settings keyboard for toggles and language."""
-    return InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("🇬🇧 English", callback_data='lang_en'),
-            InlineKeyboardButton("🇮🇷 فارسی", callback_data='lang_fa')
-        ],
-        [
-            InlineKeyboardButton("🔔 Notifications", callback_data='toggle_notif'),
-            InlineKeyboardButton("💡 Tips", callback_data='toggle_tips')
-        ]
-    ])
 
 
 def _format_safe(text: str) -> str:
@@ -106,14 +74,9 @@ async def check_force_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             user_lang = prefs.get('language', 'en') if prefs else 'en'
 
             if message:
-                keyboard = [[InlineKeyboardButton(
-                    get_text(user_lang, 'join_button'),
-                    callback_data='check_join'
-                )]]
-
                 await message.reply_text(
                     get_text(user_lang, 'join_channel', channel=channel_display),
-                    reply_markup=InlineKeyboardMarkup(keyboard),
+                    reply_markup=build_join_keyboard(user_lang, channel_username),
                     parse_mode='Markdown'
                 )
             return False
@@ -170,7 +133,11 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_lang = prefs.get('language', 'en') if prefs else 'en'
 
     help_text = get_text(user_lang, 'help')
-    await update.message.reply_text(help_text, parse_mode='Markdown')
+    await update.message.reply_text(
+        help_text,
+        reply_markup=build_default_keyboard(user_lang),
+        parse_mode='Markdown'
+    )
 
 
 async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -188,7 +155,10 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     daily_limit = db.get_user_daily_limit(user_id)
 
     if not stats:
-        await update.message.reply_text("❌ Error getting your stats.")
+        await update.message.reply_text(
+            "❌ Error getting your stats.",
+            reply_markup=build_default_keyboard(user_lang)
+        )
         return
 
     stats_text = get_text(
@@ -206,7 +176,11 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         daily_limit=daily_limit
     )
 
-    await update.message.reply_text(stats_text, parse_mode='Markdown')
+    await update.message.reply_text(
+        stats_text,
+        reply_markup=build_default_keyboard(user_lang),
+        parse_mode='Markdown'
+    )
 
 
 async def history_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -225,6 +199,7 @@ async def history_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not history:
         await update.message.reply_text(
             get_text(user_lang, 'no_history'),
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
         return
@@ -243,7 +218,11 @@ async def history_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         count=len(history)
     )
 
-    await update.message.reply_text(full_text, parse_mode='Markdown')
+    await update.message.reply_text(
+        full_text,
+        reply_markup=build_default_keyboard(user_lang),
+        parse_mode='Markdown'
+    )
 
 
 async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -269,7 +248,7 @@ async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
         settings_text,
-        reply_markup=build_settings_keyboard(),
+        reply_markup=build_settings_keyboard(user_lang),
         parse_mode='Markdown'
     )
 
@@ -293,6 +272,7 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user_id not in ADMIN_IDS and today_scans >= daily_limit:
         await update.message.reply_text(
             get_text(user_lang, 'daily_limit_reached', count=today_scans, limit=daily_limit),
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
         return
@@ -300,6 +280,7 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not context.args:
         await update.message.reply_text(
             "Usage: `/scan https://example.com`",
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
         return
@@ -309,6 +290,7 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not is_valid_url(url):
         await update.message.reply_text(
             get_text(user_lang, 'invalid_url_format'),
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
         return
@@ -329,6 +311,7 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
             # Send scanning message
             checking_msg = await update.message.reply_text(
                 get_text(user_lang, 'scanning', url=url),
+                reply_markup=build_default_keyboard(user_lang),
                 parse_mode='Markdown'
             )
 
@@ -357,7 +340,11 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
             db.add_scan(user_id, url, result_type, verified, detail_url)
 
             # Edit message with result
-            await checking_msg.edit_text(response, parse_mode='Markdown')
+            await checking_msg.edit_text(
+                response,
+                reply_markup=build_default_keyboard(user_lang),
+                parse_mode='Markdown'
+            )
             return
 
         # If cached, just show result
@@ -368,12 +355,17 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
         else:
             response = get_text(user_lang, 'error_scanning', error='Cached error')
 
-        await update.message.reply_text(response, parse_mode='Markdown')
+        await update.message.reply_text(
+            response,
+            reply_markup=build_default_keyboard(user_lang),
+            parse_mode='Markdown'
+        )
 
     except Exception as e:
         logger.error(f"Error scanning URL: {e}")
         await update.message.reply_text(
             get_text(user_lang, 'error_scanning', error=str(e)),
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
 
@@ -386,7 +378,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user_id in ADMIN_IDS and reply_target:
         text = update.message.text
         if not text or not text.strip():
-            await update.message.reply_text(get_text('en', 'contact_no_message'))
+            await update.message.reply_text(
+                get_text('en', 'contact_no_message'),
+                reply_markup=build_default_keyboard('en')
+            )
             return
 
         context.user_data.pop(SUPPORT_REPLY_STATE, None)
@@ -394,7 +389,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         thread_info = threads.get(reply_target)
 
         if not thread_info:
-            await update.message.reply_text(get_text('en', 'contact_unknown_thread'))
+            await update.message.reply_text(
+                get_text('en', 'contact_unknown_thread'),
+                reply_markup=build_default_keyboard('en')
+            )
             return
 
         safe_message = _format_safe(text)
@@ -404,10 +402,16 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 reply_target,
                 get_text(thread_info.get('lang', 'en'), 'contact_reply_received', message=safe_message)
             )
-            await update.message.reply_text(get_text('en', 'contact_reply_sent'))
+            await update.message.reply_text(
+                get_text('en', 'contact_reply_sent'),
+                reply_markup=build_default_keyboard('en')
+            )
         except Exception as exc:
             logger.error(f"Error sending support reply: {exc}")
-            await update.message.reply_text(get_text('en', 'contact_reply_failed'))
+            await update.message.reply_text(
+                get_text('en', 'contact_reply_failed'),
+                reply_markup=build_default_keyboard('en')
+            )
         return
 
     if await handle_admin_interactions(update, context):
@@ -428,7 +432,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if context.user_data.get(SUPPORT_STATE_KEY):
         text = update.message.text
         if not text or not text.strip():
-            await update.message.reply_text(get_text(user_lang, 'contact_no_message'))
+            await update.message.reply_text(
+                get_text(user_lang, 'contact_no_message'),
+                reply_markup=build_default_keyboard(user_lang)
+            )
             return
 
         context.user_data.pop(SUPPORT_STATE_KEY, None)
@@ -443,7 +450,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             'display': display_name
         }
 
-        await update.message.reply_text(get_text(user_lang, 'contact_thanks'))
+        await update.message.reply_text(
+            get_text(user_lang, 'contact_thanks'),
+            reply_markup=build_default_keyboard(user_lang)
+        )
         await update.message.reply_text(
             get_text(user_lang, 'menu_prompt'),
             reply_markup=build_main_menu_keyboard(user_lang)
@@ -476,6 +486,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if re.search(r'(https?://|www\.)', text):
             await update.message.reply_text(
                 get_text(user_lang, 'invalid_url_format'),
+                reply_markup=build_default_keyboard(user_lang),
                 parse_mode='Markdown'
             )
         return
@@ -488,6 +499,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if user_id not in ADMIN_IDS and today_scans >= daily_limit:
         await update.message.reply_text(
             get_text(user_lang, 'daily_limit_reached', count=today_scans, limit=daily_limit),
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
         return
@@ -500,5 +512,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if len(urls) > 3:
         await update.message.reply_text(
-            f"⚠️ Found {len(urls)} URLs, scanned first 3 to avoid rate limits."
+            f"⚠️ Found {len(urls)} URLs, scanned first 3 to avoid rate limits.",
+            reply_markup=build_default_keyboard(user_lang)
         )
