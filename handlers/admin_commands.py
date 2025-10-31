@@ -131,6 +131,7 @@ async def admin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     force_join = "✅ Enabled" if db.is_force_join_enabled() else "❌ Disabled"
     channel_id, channel_username = db.get_force_join_channel()
     channel = channel_username if channel_username else "Not set"
+    channel = escape_markdown(channel, version=1)
 
     # Get global limit
     global_limit = db.get_global_daily_limit()

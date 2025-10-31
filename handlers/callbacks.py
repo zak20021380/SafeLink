@@ -5,6 +5,7 @@ Handles all inline button clicks
 
 import logging
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.helpers import escape_markdown
 from telegram.ext import ContextTypes
 
 from bot.database import db
@@ -215,6 +216,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await _send_ready_message(query, user_lang)
             return
 
+        channel_display = channel_username or channel_id
+        if channel_display:
+            channel_display = escape_markdown(channel_display, version=1)
+
         try:
             member = await context.bot.get_chat_member(chat_id=channel_id, user_id=user_id)
 
@@ -223,7 +228,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await _send_ready_message(query, user_lang)
             else:
                 await query.answer(
-                    get_text(user_lang, 'not_joined', channel=channel_username),
+                    get_text(user_lang, 'not_joined', channel=channel_display),
                     show_alert=True
                 )
         except Exception as e:
@@ -243,6 +248,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         force_join = "✅ Enabled" if db.is_force_join_enabled() else "❌ Disabled"
         channel_id, channel_username = db.get_force_join_channel()
         channel = channel_username if channel_username else "Not set"
+        channel = escape_markdown(channel, version=1)
         global_limit = db.get_global_daily_limit()
 
         admin_text = get_text(

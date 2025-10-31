@@ -7,6 +7,7 @@ import asyncio
 import logging
 import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.helpers import escape_markdown
 from telegram.ext import ContextTypes
 
 from bot.database import db
@@ -90,6 +91,9 @@ async def check_force_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -
         return True
 
     message = update.effective_message
+    channel_display = channel_username or channel_id
+    if channel_display:
+        channel_display = escape_markdown(channel_display, version=1)
 
     try:
         member = await context.bot.get_chat_member(chat_id=channel_id, user_id=user_id)
@@ -108,7 +112,7 @@ async def check_force_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -
                 )]]
 
                 await message.reply_text(
-                    get_text(user_lang, 'join_channel', channel=channel_username),
+                    get_text(user_lang, 'join_channel', channel=channel_display),
                     reply_markup=InlineKeyboardMarkup(keyboard),
                     parse_mode='Markdown'
                 )
