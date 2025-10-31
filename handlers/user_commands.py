@@ -18,6 +18,56 @@ from .admin_commands import handle_admin_interactions
 logger = logging.getLogger(__name__)
 
 
+SUPPORT_STATE_KEY = 'awaiting_support_message'
+SUPPORT_REPLY_STATE = 'support_reply_to'
+SUPPORT_THREADS_KEY = 'support_threads'
+
+
+def build_main_menu_keyboard(user_lang: str) -> InlineKeyboardMarkup:
+    """Build the main menu keyboard with quick actions."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(get_text(user_lang, 'menu_scan_button'), callback_data='menu_scan'),
+            InlineKeyboardButton(get_text(user_lang, 'menu_stats_button'), callback_data='menu_stats')
+        ],
+        [
+            InlineKeyboardButton(get_text(user_lang, 'menu_history_button'), callback_data='menu_history'),
+            InlineKeyboardButton(get_text(user_lang, 'menu_settings_button'), callback_data='menu_settings')
+        ],
+        [
+            InlineKeyboardButton(get_text(user_lang, 'menu_help_button'), callback_data='menu_help')
+        ],
+        [
+            InlineKeyboardButton(get_text(user_lang, 'menu_contact_button'), callback_data='contact_manager')
+        ],
+        [
+            InlineKeyboardButton("🇬🇧 English", callback_data='lang_en'),
+            InlineKeyboardButton("🇮🇷 فارسی", callback_data='lang_fa')
+        ]
+    ])
+
+
+def build_settings_keyboard() -> InlineKeyboardMarkup:
+    """Build the settings keyboard for toggles and language."""
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("🇬🇧 English", callback_data='lang_en'),
+            InlineKeyboardButton("🇮🇷 فارسی", callback_data='lang_fa')
+        ],
+        [
+            InlineKeyboardButton("🔔 Notifications", callback_data='toggle_notif'),
+            InlineKeyboardButton("💡 Tips", callback_data='toggle_tips')
+        ]
+    ])
+
+
+def _format_safe(text: str) -> str:
+    """Escape braces used by str.format."""
+    if not text:
+        return ''
+    return text.replace('{', '{{').replace('}', '}}')
+
+
 async def check_force_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -> bool:
     """
     Check if user must join channel before using bot
@@ -91,17 +141,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         safe_found=stats.get('safe_found', 0) if stats else 0
     )
 
-    # Language selection keyboard
-    keyboard = [
-        [
-            InlineKeyboardButton("🇬🇧 English", callback_data='lang_en'),
-            InlineKeyboardButton("🇮🇷 فارسی", callback_data='lang_fa')
-        ]
-    ]
+    menu_keyboard = build_main_menu_keyboard(user_lang)
+    message_text = f"{welcome_text}\n\n{get_text(user_lang, 'menu_prompt')}"
 
     await update.message.reply_text(
-        welcome_text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        message_text,
+        reply_markup=menu_keyboard,
         parse_mode='Markdown'
     )
 
@@ -215,20 +260,9 @@ async def settings_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         show_tips='ON' if prefs.get('show_tips') else 'OFF'
     )
 
-    keyboard = [
-        [
-            InlineKeyboardButton("🇬🇧 English", callback_data='lang_en'),
-            InlineKeyboardButton("🇮🇷 فارسی", callback_data='lang_fa')
-        ],
-        [
-            InlineKeyboardButton("🔔 Notifications", callback_data='toggle_notif'),
-            InlineKeyboardButton("💡 Tips", callback_data='toggle_tips')
-        ]
-    ]
-
     await update.message.reply_text(
         settings_text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=build_settings_keyboard(),
         parse_mode='Markdown'
     )
 
@@ -340,6 +374,35 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle messages containing URLs (auto-scan)"""
     user_id = update.effective_user.id
+
+    reply_target = context.user_data.get(SUPPORT_REPLY_STATE)
+    if user_id in ADMIN_IDS and reply_target:
+        text = update.message.text
+        if not text or not text.strip():
+            await update.message.reply_text(get_text('en', 'contact_no_message'))
+            return
+
+        context.user_data.pop(SUPPORT_REPLY_STATE, None)
+        threads = context.bot_data.get(SUPPORT_THREADS_KEY, {})
+        thread_info = threads.get(reply_target)
+
+        if not thread_info:
+            await update.message.reply_text(get_text('en', 'contact_unknown_thread'))
+            return
+
+        safe_message = _format_safe(text)
+
+        try:
+            await context.bot.send_message(
+                reply_target,
+                get_text(thread_info.get('lang', 'en'), 'contact_reply_received', message=safe_message)
+            )
+            await update.message.reply_text(get_text('en', 'contact_reply_sent'))
+        except Exception as exc:
+            logger.error(f"Error sending support reply: {exc}")
+            await update.message.reply_text(get_text('en', 'contact_reply_failed'))
+        return
+
     if await handle_admin_interactions(update, context):
         return
 
@@ -354,6 +417,50 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
+
+    if context.user_data.get(SUPPORT_STATE_KEY):
+        text = update.message.text
+        if not text or not text.strip():
+            await update.message.reply_text(get_text(user_lang, 'contact_no_message'))
+            return
+
+        context.user_data.pop(SUPPORT_STATE_KEY, None)
+
+        safe_text = _format_safe(text)
+        user = update.effective_user
+        display_name = f"@{user.username}" if user.username else user.full_name or str(user_id)
+
+        support_threads = context.bot_data.setdefault(SUPPORT_THREADS_KEY, {})
+        support_threads[user_id] = {
+            'lang': user_lang,
+            'display': display_name
+        }
+
+        await update.message.reply_text(get_text(user_lang, 'contact_thanks'))
+        await update.message.reply_text(
+            get_text(user_lang, 'menu_prompt'),
+            reply_markup=build_main_menu_keyboard(user_lang)
+        )
+
+        admin_keyboard = InlineKeyboardMarkup([
+            [InlineKeyboardButton(get_text('en', 'contact_reply_button'), callback_data=f'support_reply:{user_id}')]
+        ])
+
+        admin_message = get_text(
+            'en',
+            'contact_received_admin',
+            display=_format_safe(display_name),
+            user_id=user_id,
+            message=safe_text
+        )
+
+        for admin_id in ADMIN_IDS:
+            try:
+                await context.bot.send_message(admin_id, admin_message, reply_markup=admin_keyboard)
+            except Exception as exc:
+                logger.error(f"Error notifying admin {admin_id} about support message: {exc}")
+
+        return
 
     urls = extract_urls(text)
 
