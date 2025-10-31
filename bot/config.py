@@ -22,9 +22,15 @@ DATABASE_PATH = os.getenv('DATABASE_PATH', 'data/safeclick.db')
 # Bot Settings
 DEFAULT_DAILY_LIMIT = int(os.getenv('DEFAULT_DAILY_LIMIT', '50'))
 
+# URLScan.io API Key
+URLSCAN_API_KEY = os.getenv('URLSCAN_API_KEY', '')
+
 # Validate required settings
 if not BOT_TOKEN or BOT_TOKEN == 'YOUR_BOT_TOKEN_HERE':
     raise ValueError("❌ BOT_TOKEN not set in .env file! Get it from @BotFather")
+
+if not URLSCAN_API_KEY:
+    raise ValueError("❌ URLSCAN_API_KEY not set in .env file! Get it from URLScan.io")
 
 if not ADMIN_IDS:
     print("⚠️  Warning: No ADMIN_IDS set in .env file!")
@@ -33,3 +39,4 @@ if not ADMIN_IDS:
 print("✅ Configuration loaded successfully")
 print(f"📊 Default daily limit: {DEFAULT_DAILY_LIMIT}")
 print(f"👨‍💼 Admin IDs: {ADMIN_IDS}")
+print(f"🔑 URLScan API Key: {URLSCAN_API_KEY[:20]}...")
