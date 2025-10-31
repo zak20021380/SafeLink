@@ -93,7 +93,14 @@ class Database:
                 ('force_join_enabled', '0'),
                 ('force_join_channel_id', ''),
                 ('force_join_channel_username', ''),
-                ('global_daily_limit', '50')
+                ('global_daily_limit', '5')
+        ''')
+
+        # Ensure legacy installations respect new 24-hour cap of 5 scans
+        cursor.execute('''
+            UPDATE admin_settings
+            SET setting_value = '5'
+            WHERE setting_key = 'global_daily_limit' AND CAST(setting_value AS INTEGER) > 5
         ''')
 
         # Create indexes
@@ -251,7 +258,7 @@ class Database:
                 SELECT COUNT(*) as count
                 FROM scan_history
                 WHERE user_id = ?
-                AND DATE(scanned_at) = DATE('now')
+                AND scanned_at >= datetime('now', '-1 day')
             ''', (user_id,))
 
             result = cursor.fetchone()
@@ -404,15 +411,19 @@ class Database:
         """Get user's daily scan limit (custom or global)"""
         try:
             prefs = self.get_user_preferences(user_id)
-            if prefs and prefs.get('daily_scan_limit'):
-                return prefs['daily_scan_limit']
+            limit = None
+            if prefs and prefs.get('daily_scan_limit') is not None:
+                limit = prefs['daily_scan_limit']
 
-            # Return global limit
-            global_limit = self.get_setting('global_daily_limit')
-            return int(global_limit) if global_limit else 50
+            if limit is None:
+                global_limit = self.get_setting('global_daily_limit')
+                limit = int(global_limit) if global_limit else 5
+
+            # Every user is capped at 5 scans per rolling 24-hour window
+            return min(limit, 5)
         except Exception as e:
             logger.error(f"Error getting user daily limit: {e}")
-            return 50
+            return 5
 
     # ==================== ADMIN SETTINGS ====================
 
@@ -478,12 +489,17 @@ class Database:
 
     def set_global_daily_limit(self, limit: int) -> bool:
         """Set global daily scan limit"""
-        return self.set_setting('global_daily_limit', str(limit))
+        enforced_limit = min(limit, 5)
+        return self.set_setting('global_daily_limit', str(enforced_limit))
 
     def get_global_daily_limit(self) -> int:
         """Get global daily limit"""
         limit = self.get_setting('global_daily_limit')
-        return int(limit) if limit else 50
+        try:
+            value = int(limit)
+        except (TypeError, ValueError):
+            value = 5
+        return min(value, 5)
 
     # ==================== STATISTICS ====================
 
