@@ -21,6 +21,7 @@ STRINGS = {
         'menu_settings_button': "⚙️ Settings",
         'menu_help_button': "ℹ️ Help",
         'menu_contact_button': "📞 Contact manager",
+        'menu_main_button': "🔙 Main menu",
         'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly.",
 
         'help': "🔍 **How to Use SafeClick:**\n\n"
@@ -111,6 +112,7 @@ STRINGS = {
                         "👉 {channel}\n\n"
                         "After joining, click the button below:",
         'join_button': "✅ I Joined",
+        'open_channel_button': "📢 Open channel",
         'not_joined': "❌ You haven't joined yet!\n\nPlease join: {channel}",
 
         # Admin
@@ -189,6 +191,7 @@ STRINGS = {
         'menu_settings_button': "⚙️ تنظیمات",
         'menu_help_button': "ℹ️ راهنما",
         'menu_contact_button': "📞 ارتباط با مدیر",
+        'menu_main_button': "🔙 منوی اصلی",
         'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم.",
 
         'help': "🔍 **راهنمای استفاده:**\n\n"
@@ -279,6 +282,7 @@ STRINGS = {
                         "👉 {channel}\n\n"
                         "بعد از عضویت دکمه زیر را بزنید:",
         'join_button': "✅ عضو شدم",
+        'open_channel_button': "📢 ورود به کانال",
         'not_joined': "❌ هنوز عضو نشدید!\n\nلطفا عضو شوید: {channel}",
 
         # Admin

@@ -13,13 +13,17 @@ from bot.strings import get_text
 from bot.config import ADMIN_IDS
 from .admin_commands import do_broadcast, is_admin, start_broadcast_flow, start_forcejoin_flow
 from .user_commands import (
-    build_main_menu_keyboard,
-    build_settings_keyboard,
     SUPPORT_STATE_KEY,
     SUPPORT_THREADS_KEY,
     SUPPORT_REPLY_STATE,
     _format_safe,
     check_force_join
+)
+from .keyboards import (
+    build_main_menu_keyboard,
+    build_settings_keyboard,
+    build_default_keyboard,
+    build_join_keyboard,
 )
 
 logger = logging.getLogger(__name__)
@@ -30,6 +34,7 @@ async def _send_ready_message(query, lang: str):
     try:
         await query.message.reply_text(
             get_text(lang, 'ready_for_links'),
+            reply_markup=build_default_keyboard(lang),
             parse_mode='Markdown'
         )
     except Exception as exc:
@@ -62,6 +67,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await query.edit_message_text(
             get_text(lang, 'language_changed'),
+            reply_markup=build_default_keyboard(lang),
             parse_mode='Markdown'
         )
         await _send_ready_message(query, lang)
@@ -78,7 +84,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.update_notifications(user_id, new_state)
 
         msg = 'notifications_on' if new_state else 'notifications_off'
-        await query.edit_message_text(get_text(user_lang, msg))
+        await query.edit_message_text(
+            get_text(user_lang, msg),
+            reply_markup=build_settings_keyboard(user_lang)
+        )
         await _send_ready_message(query, user_lang)
 
     elif data == 'toggle_tips':
@@ -86,13 +95,25 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         prefs = db.get_user_preferences(user_id)  # Refresh
 
         msg = 'tips_on' if prefs.get('show_tips') else 'tips_off'
-        await query.edit_message_text(get_text(user_lang, msg))
+        await query.edit_message_text(
+            get_text(user_lang, msg),
+            reply_markup=build_settings_keyboard(user_lang)
+        )
         await _send_ready_message(query, user_lang)
 
     # ==================== MAIN MENU ACTIONS ====================
 
+    elif data == 'menu_main':
+        await query.message.reply_text(
+            get_text(user_lang, 'menu_prompt'),
+            reply_markup=build_main_menu_keyboard(user_lang)
+        )
+
     elif data == 'menu_scan':
-        await query.message.reply_text(get_text(user_lang, 'menu_scan_desc'))
+        await query.message.reply_text(
+            get_text(user_lang, 'menu_scan_desc'),
+            reply_markup=build_default_keyboard(user_lang)
+        )
 
     elif data == 'menu_stats':
         stats = db.get_user_stats(user_id)
@@ -100,7 +121,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         daily_limit = db.get_user_daily_limit(user_id)
 
         if not stats:
-            await query.message.reply_text("❌ Unable to load your stats right now.")
+            await query.message.reply_text(
+                "❌ Unable to load your stats right now.",
+                reply_markup=build_default_keyboard(user_lang)
+            )
             return
 
         stats_text = get_text(
@@ -118,7 +142,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             daily_limit=daily_limit
         )
 
-        await query.message.reply_text(stats_text, parse_mode='Markdown')
+        await query.message.reply_text(
+            stats_text,
+            reply_markup=build_default_keyboard(user_lang),
+            parse_mode='Markdown'
+        )
 
     elif data == 'menu_history':
         history = db.get_user_scan_history(user_id, limit=10)
@@ -126,6 +154,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not history:
             await query.message.reply_text(
                 get_text(user_lang, 'no_history'),
+                reply_markup=build_default_keyboard(user_lang),
                 parse_mode='Markdown'
             )
             return
@@ -144,7 +173,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             count=len(history)
         )
 
-        await query.message.reply_text(full_text, parse_mode='Markdown')
+        await query.message.reply_text(
+            full_text,
+            reply_markup=build_default_keyboard(user_lang),
+            parse_mode='Markdown'
+        )
 
     elif data == 'menu_settings':
         prefs = db.get_user_preferences(user_id)
@@ -162,20 +195,24 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await query.message.reply_text(
             settings_text,
-            reply_markup=build_settings_keyboard(),
+            reply_markup=build_settings_keyboard(user_lang),
             parse_mode='Markdown'
         )
 
     elif data == 'menu_help':
         await query.message.reply_text(
             get_text(user_lang, 'help'),
+            reply_markup=build_default_keyboard(user_lang),
             parse_mode='Markdown'
         )
 
     elif data == 'contact_manager':
         context.user_data.pop(SUPPORT_REPLY_STATE, None)
         context.user_data[SUPPORT_STATE_KEY] = True
-        await query.message.reply_text(get_text(user_lang, 'contact_prompt'))
+        await query.message.reply_text(
+            get_text(user_lang, 'contact_prompt'),
+            reply_markup=build_default_keyboard(user_lang)
+        )
 
     elif data.startswith('support_reply:'):
         if not is_admin(user_id):
@@ -199,41 +236,62 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         display = info.get('display', str(target_id))
         prompt = get_text('en', 'contact_reply_prompt', display=_format_safe(display), user_id=target_id)
 
-        await query.message.reply_text(prompt)
+        await query.message.reply_text(
+            prompt,
+            reply_markup=build_default_keyboard('en')
+        )
 
     # ==================== FORCE JOIN CHECK ====================
 
     elif data == 'check_join':
         # Check if user joined channel
         if not db.is_force_join_enabled():
-            await query.edit_message_text(get_text(user_lang, 'join_success'))
+            await query.edit_message_text(
+                get_text(user_lang, 'join_success'),
+                reply_markup=build_default_keyboard(user_lang)
+            )
             await _send_ready_message(query, user_lang)
             return
 
         channel_id, channel_username = db.get_force_join_channel()
         if not channel_id:
-            await query.edit_message_text(get_text(user_lang, 'join_success'))
+            await query.edit_message_text(
+                get_text(user_lang, 'join_success'),
+                reply_markup=build_default_keyboard(user_lang)
+            )
             await _send_ready_message(query, user_lang)
             return
 
         channel_display = channel_username or channel_id
         if channel_display:
             channel_display = escape_markdown(channel_display, version=1)
+        channel_text = channel_display or ''
 
         try:
             member = await context.bot.get_chat_member(chat_id=channel_id, user_id=user_id)
 
             if member.status in ['member', 'administrator', 'creator']:
-                await query.edit_message_text(get_text(user_lang, 'join_success'))
+                await query.edit_message_text(
+                    get_text(user_lang, 'join_success'),
+                    reply_markup=build_default_keyboard(user_lang)
+                )
                 await _send_ready_message(query, user_lang)
             else:
                 await query.answer(
-                    get_text(user_lang, 'not_joined', channel=channel_display),
+                    get_text(user_lang, 'not_joined', channel=channel_text),
                     show_alert=True
+                )
+                await query.message.reply_text(
+                    get_text(user_lang, 'not_joined', channel=channel_text),
+                    reply_markup=build_join_keyboard(user_lang, channel_username),
+                    parse_mode='Markdown'
                 )
         except Exception as e:
             logger.error(f"Error checking membership: {e}")
-            await query.edit_message_text(get_text(user_lang, 'join_success'))
+            await query.edit_message_text(
+                get_text(user_lang, 'join_success'),
+                reply_markup=build_default_keyboard(user_lang)
+            )
             await _send_ready_message(query, user_lang)
 
     # ==================== ADMIN PANEL ACTIONS ====================
