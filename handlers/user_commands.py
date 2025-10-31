@@ -89,6 +89,8 @@ async def check_force_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -
     if not channel_id:
         return True
 
+    message = update.effective_message
+
     try:
         member = await context.bot.get_chat_member(chat_id=channel_id, user_id=user_id)
 
@@ -99,16 +101,17 @@ async def check_force_join(update: Update, context: ContextTypes.DEFAULT_TYPE) -
             prefs = db.get_user_preferences(user_id)
             user_lang = prefs.get('language', 'en') if prefs else 'en'
 
-            keyboard = [[InlineKeyboardButton(
-                get_text(user_lang, 'join_button'),
-                callback_data='check_join'
-            )]]
+            if message:
+                keyboard = [[InlineKeyboardButton(
+                    get_text(user_lang, 'join_button'),
+                    callback_data='check_join'
+                )]]
 
-            await update.message.reply_text(
-                get_text(user_lang, 'join_channel', channel=channel_username),
-                reply_markup=InlineKeyboardMarkup(keyboard),
-                parse_mode='Markdown'
-            )
+                await message.reply_text(
+                    get_text(user_lang, 'join_channel', channel=channel_username),
+                    reply_markup=InlineKeyboardMarkup(keyboard),
+                    parse_mode='Markdown'
+                )
             return False
     except Exception as e:
         logger.error(f"Error checking channel membership: {e}")

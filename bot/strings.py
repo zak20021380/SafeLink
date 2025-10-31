@@ -21,7 +21,7 @@ STRINGS = {
         'menu_settings_button': "⚙️ Settings",
         'menu_help_button': "ℹ️ Help",
         'menu_contact_button': "📞 Contact manager",
-        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly. You can also use /scan followed by a URL.",
+        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly.",
 
         'help': "🔍 **How to Use SafeClick:**\n\n"
                 "**Commands:**\n"
@@ -189,7 +189,7 @@ STRINGS = {
         'menu_settings_button': "⚙️ تنظیمات",
         'menu_help_button': "ℹ️ راهنما",
         'menu_contact_button': "📞 ارتباط با مدیر",
-        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم. همچنین می‌توانید از دستور /scan به همراه لینک استفاده کنید.",
+        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم.",
 
         'help': "🔍 **راهنمای استفاده:**\n\n"
                 "**دستورات:**\n"
