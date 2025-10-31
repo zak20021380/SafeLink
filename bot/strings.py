@@ -39,12 +39,27 @@ STRINGS = {
 
         # Scanning
         'scanning': "🔍 Scanning URL...\n`{url}`",
-        'safe_link': "✅ **Link Appears Safe**\n\nThis URL seems to be safe.",
-        'phishing_detected': "🚨 **DANGER! PHISHING DETECTED!**\n\n"
-                             "⚠️ This link is dangerous!\n"
-                             "❌ DO NOT click or enter any information!",
+        'safe_link': "✅ **Link Appears Safe**\n\n"
+                     "Our automated checks did not detect any malicious behaviour.\n\n"
+                     "**Scan summary:**\n"
+                     "• No phishing indicators were triggered during analysis.\n"
+                     "• Threat intelligence sources currently consider this URL low risk.\n\n"
+                     "⚠️ Always verify the sender before sharing personal data.\n"
+                     "📨 You can send another link anytime for a fresh review.",
+        'phishing_detected': "🚨 **HIGH RISK: PHISHING DETECTED**\n\n"
+                             "The scan flagged this URL as malicious and unsafe to open.\n\n"
+                             "**Why it is dangerous:**\n"
+                             "• The content shows strong signs of credential theft or malware delivery.\n"
+                             "• The domain or hosting matches known phishing infrastructure.\n\n"
+                             "❌ Do not open, share, or submit any information on this site.\n"
+                             "📨 Send a different link if you need it checked.",
         'error_scanning': "❌ **Error Scanning URL**\n\n{error}",
-        'no_urls_found': "❌ No URLs found in your message.\n\nSend a link or use /scan <url>",
+        'no_urls_found': "❌ I couldn't detect a valid link in your message.\n\n"
+                          "Please send the full address including https:// or use /scan <url>.",
+        'invalid_url_format': "❌ The link format looks incorrect.\n\n"
+                               "Make sure it starts with http:// or https:// and try again.",
+        'ready_for_links': "🔁 I'm ready for the next link whenever you are. Just paste it here!",
+        'join_success': "✅ You're all set! You can now use the bot to analyse links.",
 
         # Limits
         'daily_limit_reached': "⚠️ **Daily Scan Limit Reached**\n\n"
@@ -171,12 +186,27 @@ STRINGS = {
 
         # Scanning
         'scanning': "🔍 در حال اسکن...\n`{url}`",
-        'safe_link': "✅ **لینک امن است**\n\nاین لینک امن به نظر می‌رسد.",
-        'phishing_detected': "🚨 **خطر! فیشینگ شناسایی شد!**\n\n"
-                             "⚠️ این لینک خطرناک است!\n"
-                             "❌ کلیک نکنید و اطلاعات وارد نکنید!",
+        'safe_link': "✅ **لینک امن به نظر می‌رسد**\n\n"
+                     "در بررسی خودکار، نشانه‌ای از فعالیت مخرب مشاهده نشد.\n\n"
+                     "**خلاصه اسکن:**\n"
+                     "• هیچ شاخص فیشینگی در محتوا فعال نشد.\n"
+                     "• منابع تهدید این آدرس را کم‌خطر گزارش کرده‌اند.\n\n"
+                     "⚠️ همیشه قبل از وارد کردن اطلاعات، فرستنده را بررسی کنید.\n"
+                     "📨 هر زمان خواستید، لینک دیگری بفرستید تا بررسی شود.",
+        'phishing_detected': "🚨 **هشدار جدی: فیشینگ شناسایی شد**\n\n"
+                             "اسکن نشان می‌دهد این لینک مخرب و ناامن است.\n\n"
+                             "**دلایل خطرناک بودن:**\n"
+                             "• محتوا نشانه‌های قوی سرقت اطلاعات یا انتشار بدافزار دارد.\n"
+                             "• دامنه یا میزبانی با زیرساخت‌های شناخته‌شده فیشینگ مطابقت دارد.\n\n"
+                             "❌ به هیچ عنوان وارد لینک نشوید یا اطلاعاتی ارسال نکنید.\n"
+                             "📨 برای بررسی، لینک دیگری بفرستید.",
         'error_scanning': "❌ **خطا در اسکن**\n\n{error}",
-        'no_urls_found': "❌ لینکی پیدا نشد.\n\nیک لینک بفرستید یا از /scan استفاده کنید",
+        'no_urls_found': "❌ لینکی با فرمت معتبر پیدا نکردم.\n\n"
+                          "لطفا آدرس کامل را همراه با https:// بفرستید یا از ‎/scan استفاده کنید.",
+        'invalid_url_format': "❌ فرمت لینک درست نیست.\n\n"
+                               "لطفا لینک را با http:// یا https:// ارسال کنید و دوباره تلاش کنید.",
+        'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید.",
+        'join_success': "✅ همه چیز آماده است! حالا می‌توانید لینک‌ها را با ربات بررسی کنید.",
 
         # Limits
         'daily_limit_reached': "⚠️ **محدودیت روزانه تمام شد**\n\n"

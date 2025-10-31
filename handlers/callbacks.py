@@ -15,6 +15,17 @@ from .admin_commands import do_broadcast, is_admin, start_broadcast_flow, start_
 logger = logging.getLogger(__name__)
 
 
+async def _send_ready_message(query, lang: str):
+    """Send a reminder that user can submit another link."""
+    try:
+        await query.message.reply_text(
+            get_text(lang, 'ready_for_links'),
+            parse_mode='Markdown'
+        )
+    except Exception as exc:
+        logger.debug(f"Unable to send ready message: {exc}")
+
+
 async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Handle all button callbacks"""
     query = update.callback_query
@@ -36,6 +47,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             get_text(lang, 'language_changed'),
             parse_mode='Markdown'
         )
+        await _send_ready_message(query, lang)
 
     # ==================== SETTINGS TOGGLES ====================
 
@@ -46,6 +58,7 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         msg = 'notifications_on' if new_state else 'notifications_off'
         await query.edit_message_text(get_text(user_lang, msg))
+        await _send_ready_message(query, user_lang)
 
     elif data == 'toggle_tips':
         db.toggle_tips(user_id)
@@ -53,25 +66,29 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         msg = 'tips_on' if prefs.get('show_tips') else 'tips_off'
         await query.edit_message_text(get_text(user_lang, msg))
+        await _send_ready_message(query, user_lang)
 
     # ==================== FORCE JOIN CHECK ====================
 
     elif data == 'check_join':
         # Check if user joined channel
         if not db.is_force_join_enabled():
-            await query.edit_message_text("✅ Welcome! You can now use the bot.")
+            await query.edit_message_text(get_text(user_lang, 'join_success'))
+            await _send_ready_message(query, user_lang)
             return
 
         channel_id, channel_username = db.get_force_join_channel()
         if not channel_id:
-            await query.edit_message_text("✅ Welcome! You can now use the bot.")
+            await query.edit_message_text(get_text(user_lang, 'join_success'))
+            await _send_ready_message(query, user_lang)
             return
 
         try:
             member = await context.bot.get_chat_member(chat_id=channel_id, user_id=user_id)
 
             if member.status in ['member', 'administrator', 'creator']:
-                await query.edit_message_text("✅ Welcome! You can now use the bot.\n\nUse /start to begin!")
+                await query.edit_message_text(get_text(user_lang, 'join_success'))
+                await _send_ready_message(query, user_lang)
             else:
                 await query.answer(
                     get_text(user_lang, 'not_joined', channel=channel_username),
@@ -79,7 +96,8 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
         except Exception as e:
             logger.error(f"Error checking membership: {e}")
-            await query.edit_message_text("✅ Welcome! You can now use the bot.")
+            await query.edit_message_text(get_text(user_lang, 'join_success'))
+            await _send_ready_message(query, user_lang)
 
     # ==================== ADMIN PANEL ACTIONS ====================
 

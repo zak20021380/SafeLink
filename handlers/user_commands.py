@@ -5,12 +5,13 @@ Handles all user-facing commands and URL scanning
 
 import asyncio
 import logging
+import re
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
 from bot.database import db
 from bot.strings import get_text
-from bot.utils import extract_urls, check_url
+from bot.utils import extract_urls, check_url, is_valid_url
 from bot.config import ADMIN_IDS
 from .admin_commands import handle_admin_interactions
 
@@ -263,6 +264,13 @@ async def scan_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     url = context.args[0]
+
+    if not is_valid_url(url):
+        await update.message.reply_text(
+            get_text(user_lang, 'invalid_url_format'),
+            parse_mode='Markdown'
+        )
+        return
     await scan_url(update, url, user_id, user_lang)
 
 
@@ -344,13 +352,19 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not text:
         return
 
+    prefs = db.get_user_preferences(user_id)
+    user_lang = prefs.get('language', 'en') if prefs else 'en'
+
     urls = extract_urls(text)
 
     if not urls:
+        # Notify user if message looks like an URL attempt but is invalid
+        if re.search(r'(https?://|www\.)', text):
+            await update.message.reply_text(
+                get_text(user_lang, 'invalid_url_format'),
+                parse_mode='Markdown'
+            )
         return
-
-    prefs = db.get_user_preferences(user_id)
-    user_lang = prefs.get('language', 'en') if prefs else 'en'
 
     # Check daily limit
     today_scans = db.get_today_scan_count(user_id)
