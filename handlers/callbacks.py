@@ -11,7 +11,13 @@ from telegram.ext import ContextTypes
 from bot.database import db
 from bot.strings import get_text
 from bot.config import ADMIN_IDS
-from .admin_commands import do_broadcast, is_admin, start_broadcast_flow, start_forcejoin_flow
+from .admin_commands import (
+    build_admin_panel_view,
+    do_broadcast,
+    is_admin,
+    start_broadcast_flow,
+    start_forcejoin_flow,
+)
 from .user_commands import (
     SUPPORT_STATE_KEY,
     SUPPORT_THREADS_KEY,
@@ -301,28 +307,10 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.answer("❌ Admin only!", show_alert=True)
             return
 
-        # Refresh admin panel stats
-        global_stats = db.get_global_stats()
-        force_join = "✅ Enabled" if db.is_force_join_enabled() else "❌ Disabled"
-        channel_id, channel_username = db.get_force_join_channel()
-        channel = channel_username if channel_username else "Not set"
-        channel = escape_markdown(channel, version=1)
-        global_limit = db.get_global_daily_limit()
-
-        admin_text = get_text(
-            'en',
-            'admin_panel',
-            total_users=global_stats.get('total_users', 0) or 0,
-            total_scans=global_stats.get('total_scans', 0) or 0,
-            total_phishing=global_stats.get('total_phishing', 0) or 0,
-            total_safe=global_stats.get('total_safe', 0) or 0,
-            force_join=force_join,
-            channel=channel,
-            global_limit=global_limit
-        )
+        admin_text, keyboard = build_admin_panel_view()
 
         try:
-            await query.edit_message_text(admin_text, parse_mode='Markdown', reply_markup=query.message.reply_markup)
+            await query.edit_message_text(admin_text, parse_mode='Markdown', reply_markup=keyboard)
             await query.answer("✅ Stats refreshed!")
         except:
             await query.answer("Already up to date!")
@@ -340,6 +328,35 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         await start_forcejoin_flow(query.message, context)
+
+    elif data == 'admin_forcejoin_toggle':
+        if not is_admin(user_id):
+            await query.answer("❌ Admin only!", show_alert=True)
+            return
+
+        if db.is_force_join_enabled():
+            db.disable_force_join()
+            await query.answer(get_text('en', 'force_join_disabled'))
+        else:
+            channel_id, channel_username = db.get_force_join_channel()
+            if not channel_id:
+                await query.answer("❌ No channel configured. Use Force Join setup first.", show_alert=True)
+                return
+
+            success = db.enable_force_join(channel_id, channel_username or '')
+            if success:
+                display_name = channel_username or channel_id
+                await query.answer(get_text('en', 'force_join_enabled', channel=display_name))
+            else:
+                await query.answer("❌ Failed to enable force join.", show_alert=True)
+                return
+
+        admin_text, keyboard = build_admin_panel_view()
+
+        try:
+            await query.edit_message_text(admin_text, parse_mode='Markdown', reply_markup=keyboard)
+        except Exception as exc:
+            logger.debug(f"Failed to update admin panel after toggle: {exc}")
 
     # ==================== BROADCAST CONFIRMATION ====================
 

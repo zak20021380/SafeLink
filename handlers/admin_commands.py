@@ -109,6 +109,45 @@ def _current_forcejoin_status() -> Tuple[str, str]:
     return status, channel_display
 
 
+def build_admin_panel_view() -> Tuple[str, InlineKeyboardMarkup]:
+    """Return the admin panel text and keyboard."""
+
+    global_stats = db.get_global_stats()
+
+    force_join_enabled = db.is_force_join_enabled()
+    force_join = "✅ Enabled" if force_join_enabled else "❌ Disabled"
+    channel_id, channel_username = db.get_force_join_channel()
+    channel = channel_username if channel_username else "Not set"
+    channel = escape_markdown(channel, version=1)
+
+    global_limit = db.get_global_daily_limit()
+
+    admin_text = get_text(
+        'en',  # Admin panel always in English
+        'admin_panel',
+        total_users=global_stats.get('total_users', 0) or 0,
+        total_scans=global_stats.get('total_scans', 0) or 0,
+        total_phishing=global_stats.get('total_phishing', 0) or 0,
+        total_safe=global_stats.get('total_safe', 0) or 0,
+        force_join=force_join,
+        channel=channel,
+        global_limit=global_limit
+    )
+
+    toggle_label = "🔓 Disable Force Join" if force_join_enabled else "🔒 Enable Force Join"
+
+    keyboard = [
+        [InlineKeyboardButton("📊 Refresh Stats", callback_data='admin_refresh')],
+        [
+            InlineKeyboardButton("📢 Broadcast", callback_data='admin_broadcast'),
+            InlineKeyboardButton("📣 Force Join", callback_data='admin_forcejoin')
+        ],
+        [InlineKeyboardButton(toggle_label, callback_data='admin_forcejoin_toggle')]
+    ]
+
+    return admin_text, InlineKeyboardMarkup(keyboard)
+
+
 def is_admin(user_id: int) -> bool:
     """Check if user is admin"""
     return user_id in ADMIN_IDS
@@ -124,41 +163,11 @@ async def admin_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(get_text(user_lang, 'not_admin'))
         return
 
-    # Get global stats
-    global_stats = db.get_global_stats()
-
-    # Get force join status
-    force_join = "✅ Enabled" if db.is_force_join_enabled() else "❌ Disabled"
-    channel_id, channel_username = db.get_force_join_channel()
-    channel = channel_username if channel_username else "Not set"
-    channel = escape_markdown(channel, version=1)
-
-    # Get global limit
-    global_limit = db.get_global_daily_limit()
-
-    admin_text = get_text(
-        'en',  # Admin panel always in English
-        'admin_panel',
-        total_users=global_stats.get('total_users', 0) or 0,
-        total_scans=global_stats.get('total_scans', 0) or 0,
-        total_phishing=global_stats.get('total_phishing', 0) or 0,
-        total_safe=global_stats.get('total_safe', 0) or 0,
-        force_join=force_join,
-        channel=channel,
-        global_limit=global_limit
-    )
-
-    keyboard = [
-        [InlineKeyboardButton("📊 Refresh Stats", callback_data='admin_refresh')],
-        [
-            InlineKeyboardButton("📢 Broadcast", callback_data='admin_broadcast'),
-            InlineKeyboardButton("📣 Force Join", callback_data='admin_forcejoin')
-        ]
-    ]
+    admin_text, keyboard = build_admin_panel_view()
 
     await update.message.reply_text(
         admin_text,
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=keyboard,
         parse_mode='Markdown'
     )
 
