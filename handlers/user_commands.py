@@ -295,7 +295,6 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
             # Send scanning message
             checking_msg = await update.message.reply_text(
                 get_text(user_lang, 'scanning', url=url),
-                reply_markup=build_default_keyboard(user_lang),
                 parse_mode='Markdown'
             )
 
@@ -332,6 +331,9 @@ async def scan_url(update, url: str, user_id: int, user_lang: str):
             return
 
         # If cached, just show result
+        # Record this scan for the current user using cached result
+        db.add_scan(user_id, url, result_type, verified, detail_url)
+
         if result_type == 'phishing':
             response = get_text(user_lang, 'phishing_detected')
         elif result_type == 'safe':
