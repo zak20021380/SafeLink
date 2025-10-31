@@ -23,7 +23,9 @@ STRINGS = {
         'menu_help_button': "ℹ️ Help",
         'menu_contact_button': "📞 Contact manager",
         'menu_main_button': "🔙 Main menu",
-        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly. (Max 5 links per 24 hours)",
+        'menu_scan_desc': "🔍 Send me any link and I'll analyse it instantly."
+                          " You can paste just the link or send a full message that contains one."
+                          " (Max 5 links per 24 hours)",
 
         'help': "🔍 **How to Use SafeClick:**\n\n"
                 "**Commands:**\n"
@@ -33,7 +35,8 @@ STRINGS = {
                 "/stats - Your statistics\n"
                 "/history - Recent scans\n"
                 "/settings - Preferences\n\n"
-                "Or just send me any link!\n\n"
+                "Or just send me any link!\n"
+                "Tip: You can share either the raw URL or a regular message that includes it.\n\n"
                 "⚠️ Remember: only 5 links can be scanned every 24 hours.",
 
         # Stats
@@ -80,7 +83,8 @@ STRINGS = {
         'invalid_url_format': "❌ The link format looks incorrect.\n\n"
                                "Make sure it starts with http:// or https:// and try again.\n\n"
                                "⚠️ Limit reminder: 5 links every 24 hours.",
-        'ready_for_links': "🔁 I'm ready for the next link whenever you are. Just paste it here!\n\n⚠️ Limit: 5 links per 24 hours.",
+        'ready_for_links': "🔁 I'm ready for the next link whenever you are."
+                           " Paste the raw URL or send a message that includes it!\n\n⚠️ Limit: 5 links per 24 hours.",
         'join_success': "✅ You're all set! You can now use the bot to analyse links.\n\n⚠️ Remember: 5 links every 24 hours.",
 
         # Contact Manager
@@ -207,7 +211,9 @@ STRINGS = {
         'menu_help_button': "ℹ️ راهنما",
         'menu_contact_button': "📞 ارتباط با مدیر",
         'menu_main_button': "🔙 منوی اصلی",
-        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم. (حداکثر ۵ لینک در ۲۴ ساعت)",
+        'menu_scan_desc': "🔍 هر لینکی را برایم بفرستید تا فوری بررسی کنم."
+                          " می‌توانید فقط خود لینک را بفرستید یا پیامی که لینک داخل آن است."
+                          " (حداکثر ۵ لینک در ۲۴ ساعت)",
 
         'help': "🔍 **راهنمای استفاده:**\n\n"
                 "**دستورات:**\n"
@@ -217,7 +223,8 @@ STRINGS = {
                 "/stats - آمار شما\n"
                 "/history - اسکن‌های اخیر\n"
                 "/settings - تنظیمات\n\n"
-                "یا مستقیم لینک بفرستید!\n\n"
+                "یا مستقیم لینک بفرستید!\n"
+                "نکته: می‌توانید صرفاً آدرس را بفرستید یا لینکی را داخل یک پیام معمولی ارسال کنید.\n\n"
                 "⚠️ در هر بازه ۲۴ ساعته فقط ۵ لینک قابل اسکن است.",
 
         # Stats
@@ -264,7 +271,8 @@ STRINGS = {
         'invalid_url_format': "❌ فرمت لینک درست نیست.\n\n"
                                "لطفا لینک را با http:// یا https:// ارسال کنید و دوباره تلاش کنید.\n\n"
                                "⚠️ یادآوری محدودیت: ۵ لینک در هر ۲۴ ساعت.",
-        'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید.\n\n⚠️ حداکثر ۵ لینک در ۲۴ ساعت.",
+        'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید."
+                           " می‌توانید فقط لینک را بفرستید یا پیامی که لینک در آن قرار دارد.\n\n⚠️ حداکثر ۵ لینک در ۲۴ ساعت.",
         'join_success': "✅ همه چیز آماده است! حالا می‌توانید لینک‌ها را با ربات بررسی کنید.\n\n⚠️ فراموش نکنید: ۵ لینک در هر ۲۴ ساعت.",
 
         # Contact Manager
