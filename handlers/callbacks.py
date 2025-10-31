@@ -17,7 +17,8 @@ from .user_commands import (
     SUPPORT_STATE_KEY,
     SUPPORT_THREADS_KEY,
     SUPPORT_REPLY_STATE,
-    _format_safe
+    _format_safe,
+    check_force_join
 )
 
 logger = logging.getLogger(__name__)
@@ -41,6 +42,11 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     data = query.data
 
     await query.answer()
+
+    if data != 'check_join':
+        can_proceed = await check_force_join(update, context)
+        if not can_proceed:
+            return
 
     db.update_user_activity(user_id)
 
