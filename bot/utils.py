@@ -6,8 +6,11 @@ URL extraction and URLScan.io API integration
 import re
 import time
 import logging
+from urllib.parse import urlparse
+
 import requests
 from typing import Dict, Optional
+
 from bot.config import URLSCAN_API_KEY
 
 logger = logging.getLogger(__name__)
@@ -33,17 +36,24 @@ def extract_urls(text: str) -> list:
 
 
 def is_valid_url(url: str) -> bool:
-    """
-    Check if string is a valid URL
+    """Validate URL format using urllib parsing."""
+    if not url:
+        return False
 
-    Args:
-        url: String to validate
+    parsed = urlparse(url)
 
-    Returns:
-        bool: True if valid URL
-    """
-    url_pattern = r'^https?://.+'
-    return bool(re.match(url_pattern, url))
+    if parsed.scheme not in ("http", "https"):
+        return False
+
+    if not parsed.netloc:
+        return False
+
+    # Basic validation to ensure domain contains a dot or is localhost
+    hostname = parsed.hostname or ""
+    if hostname == "localhost":
+        return True
+
+    return "." in hostname
 
 
 def check_url(url: str) -> dict:

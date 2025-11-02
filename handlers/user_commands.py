@@ -97,6 +97,11 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # Get user preferences and stats
     prefs = db.get_user_preferences(user_id)
     user_lang = prefs.get('language', 'en') if prefs else 'en'
+
+    language_code = (user.language_code or '').lower() if user else ''
+    if language_code.startswith('fa') and user_lang != 'fa':
+        user_lang = 'fa'
+        db.update_language(user_id, 'fa')
     stats = db.get_user_stats(user_id)
 
     welcome_text = get_text(
@@ -108,7 +113,12 @@ async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     menu_keyboard = build_main_menu_keyboard(user_lang)
-    message_text = f"{welcome_text}\n\n{get_text(user_lang, 'menu_prompt')}"
+
+    intro_text = get_text(user_lang, 'intro_message')
+    if intro_text:
+        message_text = f"{intro_text}\n\n{welcome_text}\n\n{get_text(user_lang, 'menu_prompt')}"
+    else:
+        message_text = f"{welcome_text}\n\n{get_text(user_lang, 'menu_prompt')}"
 
     await update.message.reply_text(
         message_text,
@@ -474,6 +484,23 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
         return
 
+    valid_urls = [url for url in urls if is_valid_url(url)]
+
+    if not valid_urls:
+        await update.message.reply_text(
+            get_text(user_lang, 'invalid_url_format'),
+            reply_markup=build_default_keyboard(user_lang),
+            parse_mode='Markdown'
+        )
+        return
+
+    if len(valid_urls) < len(urls):
+        await update.message.reply_text(
+            get_text(user_lang, 'invalid_url_format'),
+            reply_markup=build_default_keyboard(user_lang),
+            parse_mode='Markdown'
+        )
+
     if not await check_force_join(update, context):
         return
 
@@ -491,13 +518,13 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     # Scan URLs (limit to 3 per message)
-    for url in urls[:3]:
+    for url in valid_urls[:3]:
         await scan_url(update, url, user_id, user_lang)
-        if len(urls) > 1:
+        if len(valid_urls) > 1:
             await asyncio.sleep(1)  # Small delay between scans
 
-    if len(urls) > 3:
+    if len(valid_urls) > 3:
         await update.message.reply_text(
-            f"⚠️ Found {len(urls)} URLs, scanned first 3 to avoid rate limits.",
+            f"⚠️ Found {len(valid_urls)} URLs, scanned first 3 to avoid rate limits.",
             reply_markup=build_default_keyboard(user_lang)
         )
