@@ -6,6 +6,7 @@ Supports English and Persian (Farsi)
 STRINGS = {
     'en': {
         # Welcome and Help
+        'intro_message': "Hello! I'm SafeClick, your security assistant for checking suspicious links.",
         'welcome': "🛡️ **Welcome to SafeClick!**\n\n"
                    "I protect you from phishing and malicious links.\n\n"
                    "**Your Stats:**\n"
@@ -194,6 +195,7 @@ STRINGS = {
 
     'fa': {
         # Welcome and Help
+        'intro_message': "سلام! من SafeClick هستم؛ ربات هوشمند برای بررسی و ایمن‌سازی لینک‌های شما.",
         'welcome': "🛡️ **به SafeClick خوش آمدید!**\n\n"
                    "من شما را از لینک‌های فیشینگ محافظت می‌کنم.\n\n"
                    "**آمار شما:**\n"
@@ -268,7 +270,7 @@ STRINGS = {
         'no_urls_found': "❌ لینکی با فرمت معتبر پیدا نکردم.\n\n"
                           "لطفا آدرس کامل را همراه با https:// بفرستید یا از ‎/scan استفاده کنید.\n\n"
                           "⚠️ یادآوری محدودیت: ۵ لینک در هر ۲۴ ساعت.",
-        'invalid_url_format': "❌ فرمت لینک درست نیست.\n\n"
+        'invalid_url_format': "❌ این لینک معتبر نیست یا فرمت آن درست نیست.\n\n"
                                "لطفا لینک را با http:// یا https:// ارسال کنید و دوباره تلاش کنید.\n\n"
                                "⚠️ یادآوری محدودیت: ۵ لینک در هر ۲۴ ساعت.",
         'ready_for_links': "🔁 هر زمان آماده بودید، لینک بعدی را برای بررسی بفرستید."
